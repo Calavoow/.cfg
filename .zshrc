@@ -49,6 +49,7 @@ alias lc='ls -lh --color=auto --group-directories-first'
 alias l='lc'
 alias grep='grep --color=auto' # Always highlight grep search term
 alias open='xdg-open'
+alias config='/usr/bin/git --git-dir=$HOME/.cfg.git/ --work-tree=$HOME'
 
 # Cmd line calculator
 alias bc='bc -l -q'
