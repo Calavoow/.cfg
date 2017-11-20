@@ -15,7 +15,7 @@ zstyle ':completion:*' max-errors 2
 # zstyle ':completion:*' menu select=long
 zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
 # zstyle ':completion:*' substitute 1
-zstyle :compinstall filename '/home/eddie/.zshrc'
+zstyle :compinstall filename '$HOME/.zshrc'
 
 autoload -Uz compinit
 compinit
@@ -32,24 +32,36 @@ bindkey -v
 zstyle ':completion:*' list-colors "=(#b) #([0-9]#)*=36=31"
 unsetopt listambiguous
 
-# Reading keyboad
-source ~/.config/zkbd/$TERM-${${DISPLAY:t}:-$VENDOR-$OSTYPE}
-    [[ -n ${key[Delete]} ]] && bindkey "${key[Delete]}" delete-char
-    [[ -n ${key[Backspace]} ]] && bindkey "${key[Backspace]}" backward-delete-char
-
 # Backward search
 bindkey "^[[A" history-beginning-search-backward
 bindkey "^[[B" history-beginning-search-forward
 
 # aliasses
-alias vim='vim --servername vimserver'
 alias vi='vim'
 alias ls='ls --color=auto'
 alias lc='ls -lh --color=auto --group-directories-first'
 alias l='lc'
 alias grep='grep --color=auto' # Always highlight grep search term
-alias open='xdg-open'
-alias config='/usr/bin/git --git-dir=$HOME/.cfg.git/ --work-tree=$HOME'
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+
+# OS specific commands
+case `uname` in
+	Darwin)
+		# MacOs
+		# OSX working dir
+		precmd () {print -Pn "\e]2; %~/ \a"}
+		preexec () {print -Pn "\e]2; %~/ \a"}
+
+		# GNU coreutils
+		PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+		MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+	;;
+	*)
+		# Other OSes
+		alias open='xdg-open'
+		alias vim='vim --servername vimserver'
+	;;
+esac
 
 # Cmd line calculator
 alias bc='bc -l -q'
@@ -76,13 +88,16 @@ prompt walters green
 PROMPT='%B%~>%b '
 # RPROMPT="%F{${1:-green}}%n%f"
 
+# Custom executables
+PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
 # Go path
-export GOPATH=~/.godeps
-export PATH="$PATH:$GOPATH/bin"
-export PATH="$PATH:$(ruby -rubygems -e "puts Gem.user_dir")/bin"
+export GOPATH=$HOME/.godeps
+PATH="$PATH:$GOPATH/bin"
+# export PATH="$PATH:$(ruby -rubygems -e "puts Gem.user_dir")/bin"
 
 # NPM path
-export PATH=$PATH:~/.npm-global/bin
+PATH=$PATH:$HOME/.npm-global/bin
 
 bindkey '^p' up-history
 bindkey '^n' down-history
@@ -100,11 +115,10 @@ function zle-line-init zle-keymap-select {
 zle -N zle-line-init
 zle -N zle-keymap-select
 
-# Load ssh keys
-# eval `keychain --eval --quiet --noask --agents ssh eddie`
-# export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/keyring/ssh"
+# Git set SSH client
+export GIT_SSH="/usr/bin/ssh"
 
 # Autosuggestions
 # source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-# Syntax highlighting, call last
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
