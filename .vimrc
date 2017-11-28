@@ -113,7 +113,6 @@ if $COLORTERM == 'gnome-terminal'
 else
 	set t_Co=16
 endif
-let g:solarized_termcolors=16
 colorscheme solarized
 set guifont=Source\ Code\ Pro\ Regular:h11
 
@@ -207,9 +206,16 @@ function! s:my_cr_function()
 endfunction
 
 " Ctrl-p ignore folders
-let g:ctrlp_custom_ignore = {
-	\ 'dir': '\v[\/](node_modules)',
-	\ }
+" let g:ctrlp_custom_ignore = {
+" 	\ 'dir': '\v[\/](node_modules)',
+"   \ }
+" Fuzzy file finder (fzf)
+function! s:find_git_root()
+  return system('git rev-parse --show-toplevel 2> /dev/null')[:-2]
+endfunction
+
+command! ProjectFiles execute 'Files' s:find_git_root()
+nnoremap <c-p> :ProjectFiles<cr>
 
 " Latex Suite settings
 "" IMPORTANT: grep will sometimes skip displaying the file name if you
@@ -243,6 +249,7 @@ let g:vimtex_motion_matchparen = 0
 " Compile rules
 let g:vimtex_compiler_latexmk = {
 \ 'build_dir' : 'build',
+\ 'callback': 0,
 \ 'options' : [
 \   '-pdf',
 \   '-verbose',
@@ -251,6 +258,11 @@ let g:vimtex_compiler_latexmk = {
 \   '-interaction=nonstopmode',
 \ ],
 \}
+
+if has("clientserver")
+	let g:vimtex_compiler_latexmk['callback'] = 1
+endif
+
 
 " Quickfix typescript
 " autocmd QuickFixCmdPost [^l]* nested cwindow
