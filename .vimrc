@@ -1,3 +1,10 @@
+" Automatic plug installation
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 if has('nvim')
 	call plug#begin('~/.config/nvim/plugged')
 else
@@ -10,10 +17,12 @@ Plug 'tpope/vim-sensible'
 Plug 'altercation/vim-colors-solarized'
 
 " Asynchronous processes
-Plug 'Shougo/vimproc.vim', { 'do': 'make' }
+Plug  'Shougo/vimproc.vim', { 'do': 'make' }
 
 " Ctrl-P
-Plug 'kien/ctrlp.vim'
+" Plug 'kien/ctrlp.vim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 " Syntax checks
 Plug 'scrooloose/syntastic'
@@ -38,12 +47,7 @@ Plug 'tpope/vim-surround'
 Plug 'junegunn/vim-easy-align'
 
 " Snippets
-Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-
-if !has('nvim')
-	" Autocomplete with neocomplete
-	Plug 'Shougo/neocomplete.vim'
-endif
+" Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 
 " Language
 Plug 'reedes/vim-wordy'
@@ -61,7 +65,7 @@ Plug 'fatih/vim-go', { 'for': 'go' }
 
 " Javascript
 Plug 'pangloss/vim-javascript'
-Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
+" Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
 
 " Coffeescript
 Plug 'kchmck/vim-coffee-script', {'for': 'coffee' }
@@ -71,6 +75,9 @@ Plug 'fsharp/vim-fsharp', {
       \ 'for': 'fsharp',
       \ 'do':  'make fsautocomplete',
       \}
+
+" Julia
+Plug 'JuliaEditorSupport/julia-vim'
 
 " Add plugins to &runtimepath
 call plug#end()
@@ -116,9 +123,8 @@ if $COLORTERM == 'gnome-terminal'
 else
 	set t_Co=16
 endif
-let g:solarized_termcolors=16
 colorscheme solarized
-set gfn=Inconsolata\ Medium\ 10
+set guifont=Source\ Code\ Pro\ Regular:h11
 
 " set background=dark
 " colorscheme default
@@ -168,11 +174,20 @@ set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.d,*.o,*.aux
 " Turn off character concealment
 set conceallevel=0
 
+
+" yank to clipboard
+if has("clipboard")
+  " set clipboard=unnamed " copy to the system clipboard
+  if has("unnamedplus") " X11 support
+    set clipboard+=unnamedplus
+  endif
+endif
+
 """
 " Plugins
 """
 " Automatic folding in Pandoc
-let g:pandoc_no_folding = 0
+let g:pandoc_no_folding = 1
 " let g:pandoc_no_spans = 1
 let g:pandoc_auto_format = 1
 " set pdflatex enginer
@@ -203,49 +218,28 @@ function! s:my_cr_function()
 endfunction
 
 " Ctrl-p ignore folders
-let g:ctrlp_custom_ignore = {
-	\ 'dir': '\v[\/](node_modules)',
-	\ }
+" let g:ctrlp_custom_ignore = {
+" 	\ 'dir': '\v[\/](node_modules)',
+"   \ }
+" Fuzzy file finder (fzf)
+function! s:find_git_root()
+  return system('git rev-parse --show-toplevel 2> /dev/null')[:-2]
+endfunction
 
-" " Latex Suite settings
-" "" IMPORTANT: grep will sometimes skip displaying the file name if you
-" " search in a singe file. This will confuse Latex-Suite. Set your grep
-" " program to always generate a file-name.
-" set grepprg=grep\ -nH\ $*
-" 
-" " OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
-" " 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
-" " The following changes the default filetype back to 'tex':
-" let g:tex_flavor='latex'
-" 
-" " TIP: if you write your \label's as \label{fig:something}, then if you
-" " type in \ref{fig: and press <C-n> you will automatically cycle through
-" " all the figure labels. Very useful!
-" let g:tex_isk='48-57,a-z,A-Z,192-255,:'
-" 
-" " Enable folding
-" "let g:atp_folding = 1
-" "let g:atp_fold_environments = ['figure','algorithm']
-" 
-" " Disable spell check in comments
-" let g:tex_comment_nospell= 1
-" 
-" " Use XeLaTeX compiler
-" let g:Tex_CompileRule_pdf = 'xelatex -interaction=nonstopmode -halt-on-error -shell-escape $*'
-" let g:Tex_DefaultTargetFormat = 'pdf'
-" let g:Tex_MultipleCompileFormats = 'pdf,aux,dvi'
-" let g:Tex_GotoError = 0
-" 
-" "Custom folding envs
-" let g:Tex_FoldedEnvironments = ",algorithm"
+command! ProjectFiles execute 'Files' s:find_git_root()
+nnoremap <c-p> :ProjectFiles<cr>
 
 " vimtex
 let g:vimtex_complete_recursive_bib = 1
 let g:vimtex_complete_close_braces = 1
 
 
-let g:vimtex_view_method = 'zathura'
-" let g:vimtex_view_general_viewer = 'zathura'
+if has('macunix')
+	let g:vimtex_view_method = 'skim'
+else
+	let g:vimtex_view_method = 'zathura'
+endif
+let g:vimtex_view_automatic = 1
 " let g:vimtex_view_general_options = '--unique @pdf\#src:@line@tex'
 " let g:vimtex_view_general_options_latexmk = '--unique'
 let g:vimtex_latexmk_callback_hooks = ['MyTestHook']
@@ -269,12 +263,23 @@ endfunction
 
 let g:vimtex_motion_matchparen = 0
 
-" building tex
-let g:vimtex_latexmk_build_dir = 'build'
+" Compile rules
+let g:vimtex_compiler_latexmk = {
+\ 'build_dir' : 'build',
+\ 'callback': 0,
+\ 'options' : [
+\   '-pdf',
+\   '-verbose',
+\   '-file-line-error',
+\   '-synctex=1',
+\   '-interaction=nonstopmode',
+\ ],
+\}
 
-" Arduino plugin
-au BufRead,BufNewFile *.pde set filetype=arduino
-au BufRead,BufNewFile *.ino set filetype=arduino
+if has("clientserver")
+	let g:vimtex_compiler_latexmk['callback'] = 1
+endif
+
 
 " Quickfix typescript
 " autocmd QuickFixCmdPost [^l]* nested cwindow
