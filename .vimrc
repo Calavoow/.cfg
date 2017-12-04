@@ -1,4 +1,8 @@
-call plug#begin('~/.vim/plugged')
+if has('nvim')
+	call plug#begin('~/.config/nvim/plugged')
+else
+	call plug#begin('~/.vim/plugged')
+endif
 " Sensible vim defaults
 Plug 'tpope/vim-sensible'
 
@@ -36,8 +40,10 @@ Plug 'junegunn/vim-easy-align'
 " Snippets
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 
-" Autocomplete with neocomplete
-Plug 'Shougo/neocomplete.vim'
+if !has('nvim')
+	" Autocomplete with neocomplete
+	Plug 'Shougo/neocomplete.vim'
+endif
 
 " Language
 Plug 'reedes/vim-wordy'
@@ -46,19 +52,25 @@ Plug 'reedes/vim-wordy'
 " Languages
 ""
 " Latex
-Plug 'lervag/vimtex'
+Plug 'lervag/vimtex', { 'for': 'tex' }
 " Markdown 
 Plug 'vim-pandoc/vim-pandoc' | Plug 'vim-pandoc/vim-pandoc-syntax' 
 " Julia
 " Plug 'JuliaLang/julia-vim'
-Plug 'fatih/vim-go'
+Plug 'fatih/vim-go', { 'for': 'go' }
 
 " Javascript
 Plug 'pangloss/vim-javascript'
 Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
 
 " Coffeescript
-Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
+Plug 'kchmck/vim-coffee-script', {'for': 'coffee' }
+
+" F#
+Plug 'fsharp/vim-fsharp', {
+      \ 'for': 'fsharp',
+      \ 'do':  'make fsautocomplete',
+      \}
 
 " Add plugins to &runtimepath
 call plug#end()
@@ -89,6 +101,9 @@ set scrolloff=10
 
 " always show the statusline
 set laststatus=2
+
+" local leader
+let maplocalleader = "\\"
 
 " color scheme
 if has('gui_running')
@@ -160,6 +175,8 @@ set conceallevel=0
 let g:pandoc_no_folding = 0
 " let g:pandoc_no_spans = 1
 let g:pandoc_auto_format = 1
+" set pdflatex enginer
+let g:pandoc#command#latex_engine = 'pdflatex'
 
 map <LocalLeader>pdf :Pandoc pdf<Enter>
 map <LocalLeader>pdf! :Pandoc! pdf<Enter>
@@ -190,37 +207,37 @@ let g:ctrlp_custom_ignore = {
 	\ 'dir': '\v[\/](node_modules)',
 	\ }
 
-" Latex Suite settings
-"" IMPORTANT: grep will sometimes skip displaying the file name if you
-" search in a singe file. This will confuse Latex-Suite. Set your grep
-" program to always generate a file-name.
-set grepprg=grep\ -nH\ $*
-
-" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
-" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
-" The following changes the default filetype back to 'tex':
-let g:tex_flavor='latex'
-
-" TIP: if you write your \label's as \label{fig:something}, then if you
-" type in \ref{fig: and press <C-n> you will automatically cycle through
-" all the figure labels. Very useful!
-let g:tex_isk='48-57,a-z,A-Z,192-255,:'
-
-" Enable folding
-"let g:atp_folding = 1
-"let g:atp_fold_environments = ['figure','algorithm']
-
-" Disable spell check in comments
-let g:tex_comment_nospell= 1
-
-" Use XeLaTeX compiler
-let g:Tex_CompileRule_pdf = 'xelatex -interaction=nonstopmode -halt-on-error -shell-escape $*'
-let g:Tex_DefaultTargetFormat = 'pdf'
-let g:Tex_MultipleCompileFormats = 'pdf,aux,dvi'
-let g:Tex_GotoError = 0
-
-"Custom folding envs
-let g:Tex_FoldedEnvironments = ",algorithm"
+" " Latex Suite settings
+" "" IMPORTANT: grep will sometimes skip displaying the file name if you
+" " search in a singe file. This will confuse Latex-Suite. Set your grep
+" " program to always generate a file-name.
+" set grepprg=grep\ -nH\ $*
+" 
+" " OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
+" " 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
+" " The following changes the default filetype back to 'tex':
+" let g:tex_flavor='latex'
+" 
+" " TIP: if you write your \label's as \label{fig:something}, then if you
+" " type in \ref{fig: and press <C-n> you will automatically cycle through
+" " all the figure labels. Very useful!
+" let g:tex_isk='48-57,a-z,A-Z,192-255,:'
+" 
+" " Enable folding
+" "let g:atp_folding = 1
+" "let g:atp_fold_environments = ['figure','algorithm']
+" 
+" " Disable spell check in comments
+" let g:tex_comment_nospell= 1
+" 
+" " Use XeLaTeX compiler
+" let g:Tex_CompileRule_pdf = 'xelatex -interaction=nonstopmode -halt-on-error -shell-escape $*'
+" let g:Tex_DefaultTargetFormat = 'pdf'
+" let g:Tex_MultipleCompileFormats = 'pdf,aux,dvi'
+" let g:Tex_GotoError = 0
+" 
+" "Custom folding envs
+" let g:Tex_FoldedEnvironments = ",algorithm"
 
 " vimtex
 let g:vimtex_complete_recursive_bib = 1
@@ -233,7 +250,18 @@ let g:vimtex_view_method = 'zathura'
 " let g:vimtex_view_general_options_latexmk = '--unique'
 let g:vimtex_latexmk_callback_hooks = ['MyTestHook']
 
-let g:vimtex_quickfix_ignore_all_warnings = 1
+" disable quickfix warnings
+let g:vimtex_quickfix_warnings = {
+	\ 'default' : 1,
+	\ 'general' : 0,
+	\ 'overfull' : 0,
+	\ 'underfull' : 0,
+	\ 'packages' : {
+	\   'default' : 1,
+	\   'natbib' : 0,
+	\   'biblatex': 0
+	\ },
+	\}
 
 function! MyTestHook(status)
   echom a:status

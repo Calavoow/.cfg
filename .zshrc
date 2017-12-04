@@ -42,6 +42,7 @@ bindkey "^[[A" history-beginning-search-backward
 bindkey "^[[B" history-beginning-search-forward
 
 # aliasses
+#alias nvim='nvim --servername nvimserver'
 alias vim='vim --servername vimserver'
 alias vi='vim'
 alias ls='ls --color=auto'
@@ -84,12 +85,22 @@ export PATH="$PATH:$(ruby -rubygems -e "puts Gem.user_dir")/bin"
 # NPM path
 export PATH=$PATH:~/.npm-global/bin
 
+# Stack path
+export PATH=$PATH:~/.local/bin
+
 bindkey '^p' up-history
 bindkey '^n' down-history
 bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
 bindkey '^w' backward-kill-word
 bindkey '^r' history-incremental-search-backward
+
+# Toggle vi
+foreground-vi() {
+  fg %vi
+}
+zle -N foreground-vi
+bindkey '^Z' foreground-vi
 
 function zle-line-init zle-keymap-select {
     VIM_PROMPT="[% NORMAL]% "
