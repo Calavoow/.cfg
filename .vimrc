@@ -267,13 +267,6 @@ let g:vimtex_motion_matchparen = 0
 let g:vimtex_compiler_latexmk = {
 \ 'build_dir' : 'build',
 \ 'callback': 0,
-\ 'options' : [
-\   '-pdf',
-\   '-verbose',
-\   '-file-line-error',
-\   '-synctex=1',
-\   '-interaction=nonstopmode',
-\ ],
 \}
 
 if has("clientserver")
