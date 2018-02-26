@@ -38,7 +38,6 @@ bindkey "^[[B" history-beginning-search-forward
 
 # aliasses
 #alias nvim='nvim --servername nvimserver'
-alias vim='vim --servername vimserver'
 alias vi='vim'
 alias ls='ls --color=auto'
 alias lc='ls -lh --color=auto --group-directories-first'
@@ -55,8 +54,8 @@ case `uname` in
 		preexec () {print -Pn "\e]2; %~/ \a"}
 
 		# GNU coreutils
-		PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-		MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+		# PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+		# MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 	;;
 	*)
 		# Other OSes
@@ -91,18 +90,22 @@ PROMPT='%B%~>%b '
 # RPROMPT="%F{${1:-green}}%n%f"
 
 # Custom executables
-PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+# PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 
 # Go path
-export GOPATH=$HOME/.godeps
-PATH="$PATH:$GOPATH/bin"
+# export GOPATH=$HOME/.godeps
+# PATH="$PATH:$GOPATH/bin"
 # export PATH="$PATH:$(ruby -rubygems -e "puts Gem.user_dir")/bin"
 
 # NPM path
-PATH=$PATH:$HOME/.npm-global/bin
+# PATH=$PATH:$HOME/.npm-global/bin
 
 # Stack path
-export PATH=$PATH:~/.local/bin
+# export PATH=$PATH:~/.local/bin
+
+# Pipenv config
+export PIPENV_VENV_IN_PROJECT=1
+export PIPENV_SHELL_FANCY=1
 
 bindkey '^p' up-history
 bindkey '^n' down-history
@@ -129,8 +132,5 @@ zle -N zle-keymap-select
 
 # Git set SSH client
 export GIT_SSH="/usr/bin/ssh"
-
-# Autosuggestions
-# source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
