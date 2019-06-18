@@ -134,3 +134,6 @@ zle -N zle-keymap-select
 export GIT_SSH="/usr/bin/ssh"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Load rbenv
+eval "$(rbenv init -)"

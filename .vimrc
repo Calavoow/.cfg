@@ -6,7 +6,7 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 if has('nvim')
-	call plug#begin('~/.config/nvim/plugged')
+	call plug#begin('~/.local/share/nvim/plugged')
 else
 	call plug#begin('~/.vim/plugged')
 endif
@@ -25,7 +25,11 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 " Syntax checks
-Plug 'scrooloose/syntastic'
+if has('nvim')
+	Plug 'neomake/neomake'
+else
+	Plug 'scrooloose/syntastic'
+endif
 
 " Repeat with .
 Plug 'tpope/vim-repeat'
@@ -46,9 +50,6 @@ Plug 'tpope/vim-surround'
 " Aligning
 Plug 'junegunn/vim-easy-align'
 
-" Snippets
-" Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-
 " Language
 Plug 'reedes/vim-wordy'
 
@@ -57,6 +58,7 @@ Plug 'reedes/vim-wordy'
 ""
 " Latex
 Plug 'lervag/vimtex', { 'for': 'tex' }
+
 " Markdown 
 Plug 'vim-pandoc/vim-pandoc' | Plug 'vim-pandoc/vim-pandoc-syntax' 
 " Julia
@@ -192,6 +194,8 @@ let g:pandoc_no_folding = 1
 let g:pandoc_auto_format = 1
 " set pdflatex enginer
 let g:pandoc#command#latex_engine = 'pdflatex'
+let g:pandoc#modules#disabled = ["folding"]
+let g:pandoc#syntax#conceal#use = 0
 
 map <LocalLeader>pdf :Pandoc pdf<Enter>
 map <LocalLeader>pdf! :Pandoc! pdf<Enter>
@@ -201,6 +205,9 @@ set tags=./tags;/
 
 " Completion options
 set completeopt=menu
+
+" Spellcheck
+set spell spelllang=en_us
 
 " Neocomplete settings
 " Use neocomplete.
@@ -232,6 +239,8 @@ nnoremap <c-p> :ProjectFiles<cr>
 " vimtex
 let g:vimtex_complete_recursive_bib = 1
 let g:vimtex_complete_close_braces = 1
+" Disable `x imaps for math mode.
+let g:vimtex_imaps_enabled = 0
 
 
 if has('macunix')
@@ -242,36 +251,41 @@ endif
 let g:vimtex_view_automatic = 1
 " let g:vimtex_view_general_options = '--unique @pdf\#src:@line@tex'
 " let g:vimtex_view_general_options_latexmk = '--unique'
-let g:vimtex_latexmk_callback_hooks = ['MyTestHook']
 
 " disable quickfix warnings
-let g:vimtex_quickfix_warnings = {
-	\ 'default' : 1,
-	\ 'general' : 0,
-	\ 'overfull' : 0,
-	\ 'underfull' : 0,
-	\ 'packages' : {
-	\   'default' : 1,
-	\   'natbib' : 0,
-	\   'biblatex': 0
-	\ },
-	\}
+" let g:vimtex_quickfix_latexlog = {
+" 	\ 'default' : 1,
+" 	\ 'general' : 0,
+" 	\ 'overfull' : 0,
+" 	\ 'underfull' : 0
+" 	\}
+let g:vimtex_quickfix_latexlog = {
+      \ 'default' : 1,
+      \ 'general' : 1,
+      \ 'references' : 1,
+      \ 'overfull' : 1,
+      \ 'underfull' : 1,
+      \ 'font' : 1,
+      \ 'packages' : {
+      \   'default' : 1,
+      \   'natbib' : 1,
+      \   'biblatex' : 1,
+      \   'babel' : 1,
+      \   'hyperref' : 1,
+      \   'scrreprt' : 1,
+      \   'fixltx2e' : 1,
+      \   'titlesec' : 1,
+      \ },
+      \}
 
-function! MyTestHook(status)
-  echom a:status
-endfunction
+let g:vimtex_quickfix_mode = 2
 
 let g:vimtex_motion_matchparen = 0
 
 " Compile rules
 let g:vimtex_compiler_latexmk = {
-\ 'build_dir' : 'build',
-\ 'callback': 0,
+\ 'build_dir' : 'build'
 \}
-
-if has("clientserver")
-	let g:vimtex_compiler_latexmk['callback'] = 1
-endif
 
 
 " Quickfix typescript
@@ -288,6 +302,12 @@ let g:syntastic_mode_map = { 'mode': 'active',
 			\ 'passive_filetypes' : ['typescript', 'go'] }
 let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
 let g:syntastic_javascript_checkers = ['jshint']
+
+" Neomake auto run
+" on read & write
+if has('nvim')
+	call neomake#configure#automake('rw', 500)
+endif
 
 " Vim Easy Align
 " Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
@@ -339,5 +359,5 @@ let g:go_auto_type_info = 1
 " Javascript, tern for vim
 let g:tern_map_keys = 1
 
-" Temp
-set spell
+" Disable temp files for gopass password files
+au BufNewFile,BufRead /dev/shm/gopass.* setlocal noswapfile nobackup noundofile

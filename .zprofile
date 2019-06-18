@@ -1,5 +1,5 @@
 # Add completions config dir
-fpath+=$HOME/.config/zsh
+fpath=($HOME/.config/zsh $fpath)
 
 # Go path
 export GOPATH=$HOME/.godeps
@@ -11,8 +11,6 @@ path+=(
 	$HOME/.npm-global/bin # NPM binaries
 	$HOME/.local/bin # Haskell stack path
 )
-
-# export PATH="$PATH:$(ruby -rubygems -e "puts Gem.user_dir")/bin"
 
 # OS specific commands
 case `uname` in
@@ -29,5 +27,11 @@ case `uname` in
 	;;
 esac
 
-# export to sub-processes (make it inherited by child processes)
-# export PATH
+# GPG TTY fix
+GPG_TTY=$(tty)
+export GPG_TTY
+
+. .env_secrets
+
+# Use neovim as manpager
+export MANPAGER="nvim -c 'set ft=man' -"
