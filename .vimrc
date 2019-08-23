@@ -14,7 +14,7 @@ endif
 Plug 'tpope/vim-sensible'
 
 " Solarized colorscheme
-Plug 'altercation/vim-colors-solarized'
+Plug 'lifepillar/vim-solarized8'
 
 " Asynchronous processes
 Plug  'Shougo/vimproc.vim', { 'do': 'make' }
@@ -25,7 +25,8 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 " Syntax checks
-Plug 'scrooloose/syntastic'
+Plug 'w0rp/ale'
+" Plug 'scrooloose/syntastic'
 
 " Repeat with .
 Plug 'tpope/vim-repeat'
@@ -48,6 +49,19 @@ Plug 'junegunn/vim-easy-align'
 
 " Snippets
 " Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+
+" Completions
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+let g:deoplete#enable_at_startup = 1
+
+" Editorconfig for indenting and such
+Plug 'editorconfig/editorconfig-vim'
 
 " Language
 Plug 'reedes/vim-wordy'
@@ -78,6 +92,9 @@ Plug 'fsharp/vim-fsharp', {
 
 " Julia
 Plug 'JuliaEditorSupport/julia-vim'
+
+" Elm
+Plug 'ElmCast/elm-vim'
 
 " Add plugins to &runtimepath
 call plug#end()
@@ -112,22 +129,10 @@ set laststatus=2
 " local leader
 let maplocalleader = "\\"
 
-" color scheme
-if has('gui_running')
-    set background=light
-else
-    set background=light
-endif
-if $COLORTERM == 'gnome-terminal'
-	set t_Co=256
-else
-	set t_Co=16
-endif
-colorscheme solarized
-set guifont=Source\ Code\ Pro\ Regular:h11
-
-" set background=dark
-" colorscheme default
+set background=light
+set termguicolors
+colorscheme solarized8
+set guifont=Fira\ Mono\ Regular:h12
 
 " highlight current line
 set cursorline
@@ -202,12 +207,6 @@ set tags=./tags;/
 " Completion options
 set completeopt=menu
 
-" Neocomplete settings
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-
 " Recommended key-mappings.
 " <CR>: close popup and save indent.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
@@ -228,6 +227,9 @@ endfunction
 
 command! ProjectFiles execute 'Files' s:find_git_root()
 nnoremap <c-p> :ProjectFiles<cr>
+
+" Editorconfig
+let g:EditorConfig_exclude_patterns = ['fugitive://.\*', 'scp://.\*']
 
 " vimtex
 let g:vimtex_complete_recursive_bib = 1
@@ -339,5 +341,6 @@ let g:go_auto_type_info = 1
 " Javascript, tern for vim
 let g:tern_map_keys = 1
 
-" Temp
-set spell
+" Set python3 path
+let g:python3_host_prog = $HOME . '/.config/nvim/.venv/bin/python'
+

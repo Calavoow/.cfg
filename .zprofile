@@ -4,12 +4,16 @@ fpath+=$HOME/.config/zsh
 # Go path
 export GOPATH=$HOME/.godeps
 
+# Pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+
 # Set path
 path+=(
 	$HOME/bin # Custom executables
 	$GOPATH/bin # Go binaries
 	$HOME/.npm-global/bin # NPM binaries
 	$HOME/.local/bin # Haskell stack path
+	$PYENV_ROOT/bin # Python binaries
 )
 
 # export PATH="$PATH:$(ruby -rubygems -e "puts Gem.user_dir")/bin"
