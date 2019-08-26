@@ -31,7 +31,7 @@ esac
 GPG_TTY=$(tty)
 export GPG_TTY
 
-. .env_secrets
+. $HOME/.env_secrets
 
 # Use neovim as manpager
 export MANPAGER="nvim -c 'set ft=man' -"
