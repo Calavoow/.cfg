@@ -14,7 +14,7 @@ endif
 Plug 'tpope/vim-sensible'
 
 " Solarized colorscheme
-Plug 'altercation/vim-colors-solarized'
+Plug 'lifepillar/vim-solarized8'
 
 " Asynchronous processes
 Plug  'Shougo/vimproc.vim', { 'do': 'make' }
@@ -25,11 +25,8 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 " Syntax checks
-if has('nvim')
-	Plug 'neomake/neomake'
-else
-	Plug 'scrooloose/syntastic'
-endif
+Plug 'w0rp/ale'
+" Plug 'scrooloose/syntastic'
 
 " Repeat with .
 Plug 'tpope/vim-repeat'
@@ -49,6 +46,22 @@ Plug 'tpope/vim-surround'
 
 " Aligning
 Plug 'junegunn/vim-easy-align'
+
+" Snippets
+" Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+
+" Completions
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+let g:deoplete#enable_at_startup = 1
+
+" Editorconfig for indenting and such
+Plug 'editorconfig/editorconfig-vim'
 
 " Language
 Plug 'reedes/vim-wordy'
@@ -80,6 +93,9 @@ Plug 'fsharp/vim-fsharp', {
 
 " Julia
 Plug 'JuliaEditorSupport/julia-vim'
+
+" Elm
+Plug 'ElmCast/elm-vim'
 
 " Add plugins to &runtimepath
 call plug#end()
@@ -114,22 +130,10 @@ set laststatus=2
 " local leader
 let maplocalleader = "\\"
 
-" color scheme
-if has('gui_running')
-    set background=light
-else
-    set background=light
-endif
-if $COLORTERM == 'gnome-terminal'
-	set t_Co=256
-else
-	set t_Co=16
-endif
-colorscheme solarized
-set guifont=Source\ Code\ Pro\ Regular:h11
-
-" set background=dark
-" colorscheme default
+set background=light
+set termguicolors
+colorscheme solarized8
+set guifont=Fira\ Mono\ Regular:h12
 
 " highlight current line
 set cursorline
@@ -206,15 +210,6 @@ set tags=./tags;/
 " Completion options
 set completeopt=menu
 
-" Spellcheck
-set spell spelllang=en_us
-
-" Neocomplete settings
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-
 " Recommended key-mappings.
 " <CR>: close popup and save indent.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
@@ -235,6 +230,9 @@ endfunction
 
 command! ProjectFiles execute 'Files' s:find_git_root()
 nnoremap <c-p> :ProjectFiles<cr>
+
+" Editorconfig
+let g:EditorConfig_exclude_patterns = ['fugitive://.\*', 'scp://.\*']
 
 " vimtex
 let g:vimtex_complete_recursive_bib = 1
@@ -303,12 +301,6 @@ let g:syntastic_mode_map = { 'mode': 'active',
 let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
 let g:syntastic_javascript_checkers = ['jshint']
 
-" Neomake auto run
-" on read & write
-if has('nvim')
-	call neomake#configure#automake('rw', 500)
-endif
-
 " Vim Easy Align
 " Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
 vmap <Enter> <Plug>(EasyAlign)
@@ -361,3 +353,6 @@ let g:tern_map_keys = 1
 
 " Disable temp files for gopass password files
 au BufNewFile,BufRead /dev/shm/gopass.* setlocal noswapfile nobackup noundofile
+
+" Set python3 path
+let g:python3_host_prog = $HOME . '/.config/nvim/.venv/bin/python'
