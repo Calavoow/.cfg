@@ -14,6 +14,7 @@ path+=(
 	$HOME/.npm-global/bin # NPM binaries
 	$HOME/.local/bin # Haskell stack path
 	$PYENV_ROOT/bin # Python binaries
+	$HOME/.poetry/bin:$PATH # Python poetry binary
 )
 
 # OS specific commands
